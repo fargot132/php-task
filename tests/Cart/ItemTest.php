@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Recruitment\Tests\Cart;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Recruitment\Cart\Exception\QuantityTooLowException;
 use Recruitment\Cart\Item;
 use Recruitment\Entity\Product;
 
@@ -26,10 +28,11 @@ class ItemTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
+     *
      */
     public function constructorThrowsExceptionWhenQuantityIsTooLow(): void
     {
+        $this->expectException(InvalidArgumentException::class);
         $product = (new Product())->setMinimumQuantity(10);
 
         new Item($product, 9);
@@ -37,10 +40,11 @@ class ItemTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Recruitment\Cart\Exception\QuantityTooLowException
+     *
      */
     public function itThrowsExceptionWhenSettingTooLowQuantity(): void
     {
+        $this->expectException(QuantityTooLowException::class);
         $product = (new Product())->setMinimumQuantity(10);
 
         $item = new Item($product, 10);
