@@ -51,6 +51,14 @@ class Item
     }
 
     /**
+     * @return int
+     */
+    public function getTotalPriceGross(): int
+    {
+        return round($this->getTotalPrice() * (1 + $this->getProduct()->getTax() / 100));
+    }
+
+    /**
      * @param int $quantity
      * @throws QuantityTooLowException
      */
