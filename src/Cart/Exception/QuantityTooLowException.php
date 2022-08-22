@@ -2,7 +2,9 @@
 
 namespace Recruitment\Cart\Exception;
 
-class QuantityTooLowException extends \Exception
+use Exception;
+
+class QuantityTooLowException extends Exception
 {
 
 }

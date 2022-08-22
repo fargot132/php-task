@@ -2,6 +2,8 @@
 
 namespace Recruitment\Cart;
 
+use OutOfBoundsException;
+use Recruitment\Entity\Order;
 use Recruitment\Entity\Product;
 
 class Cart
@@ -46,21 +48,27 @@ class Cart
         return $totalPrice;
     }
 
-    public function getItem($id): Item
+    /**
+     * @param int $id
+     * @return Item
+     */
+    public function getItem(int $id): Item
     {
-        return $this->getItems()[$id];
+        if (isset($this->getItems()[$id])) {
+            return $this->getItems()[$id];
+        }
+        throw new OutOfBoundsException();
     }
 
 
     /**
      * @param int $productId
-     * @return null|int
+     * @return int|null
      */
     private function getItemKeyByProductId(int $productId): ?int
     {
         foreach ($this->getItems() as $key => $item) {
             if ($item->getProduct()->getId() === $productId) {
-                var_dump(['------key----------' => $key]);
                 return $key;
             }
         }
@@ -81,14 +89,50 @@ class Cart
 
     /**
      * @param Product $product
-     * @return bool
+     * @return Cart
      */
-    public function removeProduct(Product $product): bool
+    public function removeProduct(Product $product): Cart
     {
-        if (false !== ($key = $this->getItemKeyByProductId($product->getId()))) {
+        if (null !== ($key = $this->getItemKeyByProductId($product->getId()))) {
             unset($this->items[$key]);
-            return true;
+            $this->items = array_values($this->items);
         }
-        return false;
+        return $this;
+    }
+
+    /**
+     * @param Product $product
+     * @param int $quantity
+     * @return Cart
+     * @throws Exception\QuantityTooLowException
+     */
+    public function setQuantity(Product $product, int $quantity): Cart
+    {
+        if ($item = $this->getItemByProductId($product->getId())) {
+            $item->setQuantity($quantity);
+        } else {
+            $this->addProduct($product, $quantity);
+        }
+        return $this;
+    }
+
+    /**
+     * @param int $orderId
+     * @return Order
+     */
+    public function checkout(int $orderId): Order
+    {
+        $order =  new Order($orderId, $this->getItems());
+        $this->clear();
+        return $order;
+    }
+
+    /**
+     * @return $this
+     */
+    public function clear(): Cart
+    {
+        $this->items = [];
+        return $this;
     }
 }
