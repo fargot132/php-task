@@ -3,6 +3,9 @@
 namespace Recruitment\Entity;
 
 use Recruitment\Cart\Item;
+use Recruitment\ViewCreator\StandardViewCreator;
+use Recruitment\ViewCreator\TaxViewCreator;
+use Recruitment\ViewCreator\ViewCreatorInterface;
 
 class Order
 {
@@ -22,20 +25,15 @@ class Order
     }
 
     /**
+     * @param ViewCreatorInterface|null $viewCreator
      * @return array
      */
-    public function getDataForView(): array
+    public function getDataForView(ViewCreatorInterface $viewCreator = null): array
     {
-        $data = ['id' => $this->getId(), 'items' => [], 'total_price' => 0];
-        foreach ($this->getItems() as $item) {
-            $data['items'][] = [
-                'id' => $item->getProduct()->getId(),
-                'quantity' => $item->getQuantity(),
-                'total_price' => $item->getTotalPrice()
-            ];
-            $data['total_price'] += $item->getTotalPrice();
+        if (null === $viewCreator) {
+            $viewCreator = new StandardViewCreator();
         }
-        return $data;
+        return $viewCreator->getDataForView($this);
     }
 
     /**

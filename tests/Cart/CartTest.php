@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 use Recruitment\Cart\Cart;
 use Recruitment\Entity\Order;
 use Recruitment\Entity\Product;
+use Recruitment\ViewCreator\StandardViewCreator;
+use Recruitment\ViewCreator\TaxViewCreator;
 
 class CartTest extends TestCase
 {
@@ -92,7 +94,6 @@ class CartTest extends TestCase
     /**
      * @test
      * @dataProvider getNonExistentItemIndexes
-     *
      */
     public function itThrowsExceptionWhileGettingNonExistentItem(int $index): void
     {
@@ -118,22 +119,63 @@ class CartTest extends TestCase
 
     /**
      * @test
+     * @dataProvider providerItClearsCartAfterCheckout
      */
-    public function itClearsCartAfterCheckout(): void
+    public function itClearsCartAfterCheckout($expectedViewData, $viewCreator): void
     {
         $cart = new Cart();
-        $cart->addProduct($this->buildTestProduct(1, 15000));
-        $cart->addProduct($this->buildTestProduct(2, 10000), 2);
+        $cart->addProduct($this->buildTestProduct(1, 15000, 23));
+        $cart->addProduct($this->buildTestProduct(2, 10000, 8), 2);
 
         $order = $cart->checkout(7);
 
         $this->assertCount(0, $cart->getItems());
         $this->assertEquals(0, $cart->getTotalPrice());
         $this->assertInstanceOf(Order::class, $order);
-        $this->assertEquals(['id' => 7, 'items' => [
-            ['id' => 1, 'quantity' => 1, 'total_price' => 15000],
-            ['id' => 2, 'quantity' => 2, 'total_price' => 20000],
-        ], 'total_price' => 35000], $order->getDataForView());
+        $this->assertEquals($expectedViewData, $order->getDataForView($viewCreator));
+    }
+
+    public function providerItClearsCartAfterCheckout(): array
+    {
+        return [
+            'standardView' => [
+                [
+                    'id' => 7,
+                    'items' => [
+                        ['id' => 1, 'quantity' => 1, 'total_price' => 15000],
+                        ['id' => 2, 'quantity' => 2, 'total_price' => 20000],
+                    ],
+                    'total_price' => 35000
+                ],
+                new StandardViewCreator()
+            ],
+            'taxView' => [
+                [
+                    'id' => 7,
+                    'items' => [
+                        [
+                            'id' => 1,
+                            'price' => 15000,
+                            'tax' => '23%',
+                            'quantity' => 1,
+                            'total_price' => 15000,
+                            'total_price_gross' => 18450
+                        ],
+                        [
+                            'id' => 2,
+                            'price' => 10000,
+                            'tax' => '8%',
+                            'quantity' => 2,
+                            'total_price' => 20000,
+                            'total_price_gross' => 21600
+                        ],
+                    ],
+                    'total_price' => 35000,
+                    'total_price_gross' => 40050
+                ],
+                new TaxViewCreator()
+            ]
+        ];
     }
 
     public function getNonExistentItemIndexes(): array
@@ -146,8 +188,9 @@ class CartTest extends TestCase
         ];
     }
 
-    private function buildTestProduct(int $id, int $price): Product
+
+    private function buildTestProduct(int $id, int $price, int $tax = 0): Product
     {
-        return (new Product())->setId($id)->setUnitPrice($price);
+        return (new Product())->setId($id)->setUnitPrice($price)->setTax($tax);
     }
 }

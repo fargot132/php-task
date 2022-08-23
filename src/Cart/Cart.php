@@ -43,9 +43,21 @@ class Cart
     {
         $totalPrice = 0;
         foreach ($this->getItems() as $item) {
-            $totalPrice += $item->getProduct()->getUnitPrice() * $item->getQuantity();
+            $totalPrice += $item->getTotalPrice();
         }
         return $totalPrice;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalPriceGross(): int
+    {
+        $totalPriceGross = 0;
+        foreach ($this->getItems() as $item) {
+            $totalPriceGross += $item->getTotalPriceGross();
+        }
+        return $totalPriceGross;
     }
 
     /**

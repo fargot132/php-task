@@ -2,7 +2,7 @@
 
 namespace Recruitment\Tax;
 
-class PolandTax implements TaxInterface
+class PolandTaxValidator implements TaxValidatorInterface
 {
     /**
      * @return int[]

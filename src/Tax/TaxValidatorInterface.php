@@ -2,7 +2,7 @@
 
 namespace Recruitment\Tax;
 
-interface TaxInterface
+interface TaxValidatorInterface
 {
     /**
      * @return int[]

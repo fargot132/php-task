@@ -14,7 +14,6 @@ class ProductTest extends TestCase
 {
     /**
      * @test
-     *
      */
     public function itThrowsExceptionForInvalidUnitPrice(): void
     {
@@ -25,7 +24,6 @@ class ProductTest extends TestCase
 
     /**
      * @test
-     *
      */
     public function itThrowsExceptionForInvalidMinimumQuantity(): void
     {
@@ -36,12 +34,30 @@ class ProductTest extends TestCase
 
     /**
      * @test
-     *
      */
     public function itThrowsExceptionForInvalidTaxValue(): void
     {
         $this->expectException(InvalidTaxValueException::class);
         $product = new Product();
         $product->setTax(3);
+    }
+
+    /**
+     * @test
+     */
+    public function itAcceptsConstructorArgumentAndReturnsData(): void
+    {
+        $product = new Product(new TestTaxValidator());
+        $product->setId(22)
+            ->setName('Test name')
+            ->setTax(10)
+            ->setMinimumQuantity(5)
+            ->setUnitPrice(123);
+
+        $this->assertEquals(22, $product->getId());
+        $this->assertEquals('Test name', $product->getName());
+        $this->assertEquals(10, $product->getTax());
+        $this->assertEquals(5, $product->getMinimumQuantity());
+        $this->assertEquals(123, $product->getUnitPrice());
     }
 }

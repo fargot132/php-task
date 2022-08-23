@@ -17,6 +17,10 @@ class Item
      */
     private $quantity;
 
+    /**
+     * @param Product $product
+     * @param int $quantity
+     */
     public function __construct(Product $product, int $quantity)
     {
         if ($product->getMinimumQuantity() > $quantity) {
@@ -59,6 +63,14 @@ class Item
     }
 
     /**
+     * @return int
+     */
+    public function getTaxValue(): int
+    {
+        return round($this->getTotalPrice() * ($this->getProduct()->getTax() / 100));
+    }
+
+    /**
      * @param int $quantity
      * @throws QuantityTooLowException
      */
@@ -70,13 +82,25 @@ class Item
         $this->quantity = $quantity;
     }
 
-    public function addQuantity(int $quantity)
+    /**
+     * @param int $quantity
+     * @return Item
+     * @throws QuantityTooLowException
+     */
+    public function addQuantity(int $quantity): Item
     {
         $this->setQuantity($this->getQuantity() + $quantity);
+        return $this;
     }
 
-    public function substractQuantity(int $quantity)
+    /**
+     * @param int $quantity
+     * @return Item
+     * @throws QuantityTooLowException
+     */
+    public function substractQuantity(int $quantity): Item
     {
         $this->setQuantity($this->getQuantity() + $quantity);
+        return $this;
     }
 }

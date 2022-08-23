@@ -5,8 +5,8 @@ namespace Recruitment\Entity;
 use InvalidArgumentException;
 use Recruitment\Entity\Exception\InvalidTaxValueException;
 use Recruitment\Entity\Exception\InvalidUnitPriceException;
-use Recruitment\Tax\PolandTax;
-use Recruitment\Tax\TaxInterface;
+use Recruitment\Tax\PolandTaxValidator;
+use Recruitment\Tax\TaxValidatorInterface;
 
 class Product
 {
@@ -33,16 +33,16 @@ class Product
     /**
      * @var int
      */
-    private $tax = 23;
+    private $tax = 0;
     /**
-     * @var TaxInterface
+     * @var TaxValidatorInterface
      */
     private $taxValidator;
 
-    public function __construct(?TaxInterface $taxValidator = null)
+    public function __construct(?TaxValidatorInterface $taxValidator = null)
     {
         if (null === $taxValidator) {
-            $taxValidator = new PolandTax();
+            $taxValidator = new PolandTaxValidator();
         }
         $this->taxValidator = $taxValidator;
     }
