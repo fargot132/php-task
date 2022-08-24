@@ -19,13 +19,14 @@ class CartTest extends TestCase
      */
     public function itAddsOneProduct(): void
     {
-        $product = $this->buildTestProduct(1, 15000);
+        $product = $this->buildTestProduct(1, 15000, 8);
 
         $cart = new Cart();
         $cart->addProduct($product, 1);
 
         $this->assertCount(1, $cart->getItems());
         $this->assertEquals(15000, $cart->getTotalPrice());
+        $this->assertEquals(16200, $cart->getTotalPriceGross());
         $this->assertEquals($product, $cart->getItem(0)->getProduct());
     }
 
@@ -52,7 +53,7 @@ class CartTest extends TestCase
      */
     public function itIncreasesQuantityWhenAddingAnExistingProduct(): void
     {
-        $product = $this->buildTestProduct(1, 15000);
+        $product = $this->buildTestProduct(1, 15000, 23);
 
         $cart = new Cart();
         $cart->addProduct($product, 1)
@@ -60,6 +61,7 @@ class CartTest extends TestCase
 
         $this->assertCount(1, $cart->getItems());
         $this->assertEquals(45000, $cart->getTotalPrice());
+        $this->assertEquals(55350, $cart->getTotalPriceGross());
     }
 
     /**
@@ -126,6 +128,8 @@ class CartTest extends TestCase
         $cart = new Cart();
         $cart->addProduct($this->buildTestProduct(1, 15000, 23));
         $cart->addProduct($this->buildTestProduct(2, 10000, 8), 2);
+
+        $this->assertEquals(40050, $cart->getTotalPriceGross());
 
         $order = $cart->checkout(7);
 

@@ -34,6 +34,7 @@ class Product
      * @var int
      */
     private $tax = 0;
+
     /**
      * @var TaxValidatorInterface
      */

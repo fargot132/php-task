@@ -4,7 +4,6 @@ namespace Recruitment\Entity;
 
 use Recruitment\Cart\Item;
 use Recruitment\ViewCreator\StandardViewCreator;
-use Recruitment\ViewCreator\TaxViewCreator;
 use Recruitment\ViewCreator\ViewCreatorInterface;
 
 class Order
@@ -13,6 +12,7 @@ class Order
      * @var int
      */
     private $id;
+
     /**
      * @var Item[]
      */

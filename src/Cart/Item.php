@@ -12,6 +12,7 @@ class Item
      * @var Product
      */
     private $product;
+
     /**
      * @var int
      */

@@ -3,6 +3,7 @@
 namespace Recruitment\Cart;
 
 use OutOfBoundsException;
+use Recruitment\Cart\Exception\QuantityTooLowException;
 use Recruitment\Entity\Order;
 use Recruitment\Entity\Product;
 
@@ -17,6 +18,7 @@ class Cart
      * @param Product $product
      * @param int $quantity
      * @return $this
+     * @throws QuantityTooLowException
      */
     public function addProduct(Product $product, int $quantity = 1): Cart
     {
@@ -71,7 +73,6 @@ class Cart
         }
         throw new OutOfBoundsException();
     }
-
 
     /**
      * @param int $productId
